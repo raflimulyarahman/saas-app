@@ -163,7 +163,7 @@ body {
     @apply px-2 bg-black rounded-4xl flex items-center h-full aspect-square cursor-pointer;
   }
   .input {
-    @apply !border-black !bg-white focus-visible:!ring-0 focus-visible:!border-black !w-full;
+    @apply !border-black !bg-white focus-visible:!ring-0 focus-visible:!border-black !w-full !h10;
   }
   .rounded-border {
     @apply rounded-4xl border border-black;
