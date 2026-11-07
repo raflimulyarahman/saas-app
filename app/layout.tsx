@@ -30,10 +30,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(jetbrainsMono.variable, "font-sans", geist.variable)}
+      className={cn(jetbrainsMono.variable, geist.variable, bricolage.variable)}
     >
       <body
-        className={`${bricolage.variable} antialiased`}
+        className={`${bricolage.className} antialiased`}
         suppressHydrationWarning
       >
         <ClerkProvider appearance={{ variables: { colorPrimary: "#fe5933" } }}>

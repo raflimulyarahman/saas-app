@@ -1,11 +1,15 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import { createClient } from "../client";
+import { createClient } from "@supabase/supabase-js";
 
 export const createCompanion = async (formData: CreateCompanion) => {
   const { userId: author } = await auth();
-  const supabase = createClient();
+  if (!author) throw new Error("Unauthorized");
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
 
   const { data, error } = await supabase
     .from("companions")

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -26,6 +27,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { createCompanion } from "@/lib/actions/companion.actions";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name must be at least 1 characters."),
@@ -48,6 +51,9 @@ type FormValues = z.input<typeof formSchema>;
 type FormOutput = z.output<typeof formSchema>;
 
 const CompanionForm = () => {
+  const router = useRouter();
+  const STORAGE_KEY = "companion_form_draft";
+
   const form = useForm<FormValues, any, FormOutput>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,8 +66,37 @@ const CompanionForm = () => {
     },
   });
 
-  const onSubmit = (values: FormValues) => {
-    console.log(values);
+  // 1. Baca draft dari localStorage saat komponen pertama kali dimuat
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const parsed = JSON.parse(savedDraft);
+        form.reset(parsed);
+      } catch (e) {
+        console.error("Failed to parse saved form draft:", e);
+      }
+    }
+  }, [form]);
+
+  // 2. Simpan otomatis setiap ada perubahan di form
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const companion = await createCompanion(values);
+
+    if (companion) {
+      localStorage.removeItem(STORAGE_KEY); // Hapus draft jika sudah berhasil dibuat
+      router.push(`/companions/${companion.id}`);
+    } else {
+      console.log("Error: Failed to create a companion");
+      router.push("/");
+    }
   };
 
   return (
@@ -131,7 +166,7 @@ const CompanionForm = () => {
               id="topic"
               placeholder="Ex. Derivates & Integrals"
               {...field}
-              className="input"
+              className="input !h-auto min-h-24 py-2"
             />
             {fieldState.error && (
               <FieldError>{fieldState.error.message}</FieldError>
@@ -185,7 +220,7 @@ const CompanionForm = () => {
               <SelectContent>
                 <SelectGroup>
                   <SelectItem value="formal">Formal</SelectItem>
-                  <SelectItem value="informal">Informal</SelectItem>
+                  <SelectItem value="casual">Casual</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -218,7 +253,10 @@ const CompanionForm = () => {
         )}
       />
 
-      <Button type="submit" className="w-full cursor-pointer">
+      <Button
+        type="submit"
+        className="w-full cursor-pointer !h-10 !bg-black hover:!bg-black/80 !text-white rounded-lg mb-20"
+      >
         Build Your Companion
       </Button>
     </form>

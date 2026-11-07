@@ -141,9 +141,6 @@ body {
   h1 {
     @apply text-3xl font-bold;
   }
-  html {
-    @apply font-sans;
-  }
 }
 
 @layer components {
@@ -163,7 +160,7 @@ body {
     @apply px-2 bg-black rounded-4xl flex items-center h-full aspect-square cursor-pointer;
   }
   .input {
-    @apply !border-black !bg-white focus-visible:!ring-0 focus-visible:!border-black !w-full !h10;
+    @apply !border-black !bg-white focus-visible:!ring-0 focus-visible:!border-black !w-full !h-10 text-sm;
   }
   .rounded-border {
     @apply rounded-4xl border border-black;
