@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import NavItems from "./NavItems";
-import { Show, SignUpButton, SignInButton, UserButton } from "@clerk/nextjs";
+import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import { Suspense } from "react";
 
 const Navbar = () => {
@@ -16,7 +16,7 @@ const Navbar = () => {
         <Suspense fallback={<nav className="flex items-center gap-4" />}>
           <NavItems />
         </Suspense>
-        <Suspense>
+        <Suspense fallback={<div className="size-8 rounded-full bg-muted animate-pulse" />}>
           <Show when="signed-out">
             <SignInButton>
               <button className="btn-signin">Sign In</button>

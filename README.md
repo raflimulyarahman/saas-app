@@ -265,3 +265,33 @@ create table if not exists public.bookmarks (
 - **Solusi**:
   - Gunakan `<Suspense>` untuk membungkus komponen yang melakukan data fetching di halaman publik (seperti di `app/page.tsx`).
   - Atau tambahkan `export const instant = false;` pada rute privat/dinamis (seperti `/companions/new`, `/companions`, dan `/my-journey`).
+
+### 3. Clerk v7 (Core 3): `<SignedIn>` & `<SignedOut>` Deprecated / Unavailable
+- **Gejala**: Runtime error `Clerk: <SignedOut> is not available in @clerk/nextjs Core 3` atau terjadi *Hydration Mismatch* pada auth header.
+- **Penyebab**: Di `@clerk/nextjs` v7+, komponen otentikasi lama digantikan oleh komponen terpadu `<Show>`.
+- **Solusi**:
+  Gunakan `<Show>` yang dibungkus `<Suspense>` dengan fallback skeleton di `Navbar.tsx`:
+  ```tsx
+  <Suspense fallback={<div className="size-8 rounded-full bg-muted animate-pulse" />}>
+    <Show when="signed-out">
+      <SignInButton>
+        <button className="btn-signin">Sign In</button>
+      </SignInButton>
+    </Show>
+    <Show when="signed-in">
+      <UserButton />
+    </Show>
+  </Suspense>
+  ```
+
+### 4. Responsif Skala UI (90% Base Zoom)
+- **Problem**: Pada zoom normal 100%, elemen card dan CTA bisa terlihat terlalu besar atau memakan banyak ruang vertikal.
+- **Solusi**:
+  Atur ukuran font dasar `html` ke `90%` di `app/globals.css`. Karena seluruh layout Tailwind CSS menggunakan satuan `rem`, seluruh proporsi teks, kartu, dan komponen UI otomatis mengecil secara proporsional dan rapi:
+  ```css
+  @layer base {
+    html {
+      font-size: 90%;
+    }
+  }
+  ```

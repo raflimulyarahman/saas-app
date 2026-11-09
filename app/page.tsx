@@ -50,7 +50,7 @@ const Page = () => {
         <PopularCompanions />
       </Suspense>
 
-      <section className="home-section">
+      <section className="home-section mb-20">
         <Suspense
           fallback={
             <div className="companion-list w-2/3 max-lg:w-full mb-15">
