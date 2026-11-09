@@ -1,6 +1,7 @@
 "use server"
 
 import { auth } from "@clerk/nextjs/server"
+import { revalidatePath } from "next/cache"
 import { supabaseAdmin } from "@/lib/supabase.admin"
 
 export const createCompanion = async (formData: CreateCompanion) => {
@@ -25,6 +26,7 @@ export const getAllCompanions = async ({
   topic,
 }: GetAllCompanions) => {
   const supabase = supabaseAdmin
+  const { userId } = await auth()
 
   let query = supabase.from("companions").select()
 
@@ -44,7 +46,24 @@ export const getAllCompanions = async ({
 
   if (error) throw new Error(error.message)
 
-  return companions
+  if (!userId || !companions?.length) {
+    return companions.map((companion) => ({ ...companion, bookmarked: false }))
+  }
+
+  const companionIds = companions.map(({ id }) => id)
+
+  const { data: bookmarks } = await supabase
+    .from("bookmarks")
+    .select("companion_id")
+    .eq("user_id", userId)
+    .in("companion_id", companionIds)
+
+  const bookmarkedIds = new Set(bookmarks?.map((b) => b.companion_id) || [])
+
+  return companions.map((companion) => ({
+    ...companion,
+    bookmarked: bookmarkedIds.has(companion.id),
+  }))
 }
 
 export const getCompanion = async (id: string) => {
@@ -140,4 +159,59 @@ export const newCompanionPermissions = async () => {
   } else {
     return true
   }
+}
+
+// Bookmarks
+export const addBookmark = async (companionId: string, path: string) => {
+  const { userId } = await auth()
+  if (!userId) return
+
+  const supabase = supabaseAdmin
+  const { data, error } = await supabase
+    .from("bookmarks")
+    .insert({
+      companion_id: companionId,
+      user_id: userId,
+    })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath(path)
+  return data
+}
+
+export const removeBookmark = async (companionId: string, path: string) => {
+  const { userId } = await auth()
+  if (!userId) return
+
+  const supabase = supabaseAdmin
+  const { data, error } = await supabase
+    .from("bookmarks")
+    .delete()
+    .eq("companion_id", companionId)
+    .eq("user_id", userId)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath(path)
+  return data
+}
+
+export const getBookmarkedCompanions = async (userId: string) => {
+  const supabase = supabaseAdmin
+  const { data, error } = await supabase
+    .from("bookmarks")
+    .select(`companions:companion_id (*)`)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data.map(({ companions }) => companions)
 }
