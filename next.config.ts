@@ -1,4 +1,6 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
+import { imageConfigDefault } from "next/dist/shared/lib/image-config"
+import { withSentryConfig } from "@sentry/nextjs/config"
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -15,6 +17,18 @@ const nextConfig: NextConfig = {
       },
     },
   },
-};
+  images: {
+    remotePatterns: [
+      {
+        hostname: "img.clerk.com",
+      },
+    ],
+  },
+}
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: "rafli-3e",
+  project: "saas-app",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+})

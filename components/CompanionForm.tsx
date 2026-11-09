@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useEffect } from "react"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import {
   Field,
   FieldContent,
@@ -15,7 +15,7 @@ import {
   FieldSeparator,
   FieldSet,
   FieldTitle,
-} from "@/components/ui/field";
+} from "@/components/ui/field"
 import {
   Select,
   SelectContent,
@@ -23,12 +23,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { createCompanion } from "@/lib/actions/companion.actions";
-import { useRouter } from "next/navigation";
+} from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { createCompanion } from "@/lib/actions/companion.actions"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
   name: z.string().min(1, "Name must be at least 1 characters."),
@@ -37,22 +37,23 @@ const formSchema = z.object({
   voice: z.string().min(1, "Voice must be at least 1 characters."),
   style: z.string().min(1, "Style must be at least 1 characters."),
   duration: z.coerce.number().min(1, "Duration is required."),
-});
+})
 
 const subjects = [
-  { label: "Math", value: "math" },
+  { label: "Maths", value: "maths" },
   { label: "Science", value: "science" },
   { label: "Language", value: "language" },
   { label: "History", value: "history" },
   { label: "Coding", value: "coding" },
-];
+  { label: "Economics", value: "economics" },
+]
 
-type FormValues = z.input<typeof formSchema>;
-type FormOutput = z.output<typeof formSchema>;
+type FormValues = z.input<typeof formSchema>
+type FormOutput = z.output<typeof formSchema>
 
 const CompanionForm = () => {
-  const router = useRouter();
-  const STORAGE_KEY = "companion_form_draft";
+  const router = useRouter()
+  const STORAGE_KEY = "companion_form_draft"
 
   const form = useForm<FormValues, any, FormOutput>({
     resolver: zodResolver(formSchema),
@@ -64,40 +65,40 @@ const CompanionForm = () => {
       style: "",
       duration: 15,
     },
-  });
+  })
 
   // 1. Baca draft dari localStorage saat komponen pertama kali dimuat
   useEffect(() => {
-    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    const savedDraft = localStorage.getItem(STORAGE_KEY)
     if (savedDraft) {
       try {
-        const parsed = JSON.parse(savedDraft);
-        form.reset(parsed);
+        const parsed = JSON.parse(savedDraft)
+        form.reset(parsed)
       } catch (e) {
-        console.error("Failed to parse saved form draft:", e);
+        console.error("Failed to parse saved form draft:", e)
       }
     }
-  }, [form]);
+  }, [form])
 
   // 2. Simpan otomatis setiap ada perubahan di form
   useEffect(() => {
     const subscription = form.watch((values) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
-    });
-    return () => subscription.unsubscribe();
-  }, [form.watch]);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(values))
+    })
+    return () => subscription.unsubscribe()
+  }, [form.watch])
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const companion = await createCompanion(values);
+    const companion = await createCompanion(values)
 
     if (companion) {
-      localStorage.removeItem(STORAGE_KEY); // Hapus draft jika sudah berhasil dibuat
-      router.push(`/companions/${companion.id}`);
+      localStorage.removeItem(STORAGE_KEY) // Hapus draft jika sudah berhasil dibuat
+      router.push(`/companions/${companion.id}`)
     } else {
-      console.log("Error: Failed to create a companion");
-      router.push("/");
+      console.log("Error: Failed to create a companion")
+      router.push("/")
     }
-  };
+  }
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -260,7 +261,7 @@ const CompanionForm = () => {
         Build Your Companion
       </Button>
     </form>
-  );
-};
+  )
+}
 
-export default CompanionForm;
+export default CompanionForm

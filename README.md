@@ -100,4 +100,30 @@ Bertugas menangkap input user dan memperbarui URL tanpa reload halaman:
 
 ---
 
+## Catatan Masalah & Solusi (Troubleshooting)
+
+### 1. Error Vapi: `Call object is not available` pada Toggle Microphone
+- **Gejala**: Saat tombol mikrofon diklik sebelum sesi panggilan dimulai, muncul runtime error `Call object is not available` pada baris `vapi.setMuted(!isMuted)`.
+- **Penyebab**: Vapi belum membentuk koneksi sesi audio (Daily WebRTC call object belum ada) sebelum `vapi.start()` berhasil dijalankan dan status menjadi `ACTIVE`.
+- **Solusi**:
+  1. Berikan *guard clause* di fungsi `toggleMicrophone`:
+     ```typescript
+     const toggleMicrophone = () => {
+       if (callStatus !== CallStatus.ACTIVE) return;
+       const isMuted = vapi.isMuted();
+       vapi.setMuted(!isMuted);
+       setIsMuted(!isMuted);
+     };
+     ```
+  2. Nonaktifkan atribut tombol mikrofon saat sesi belum aktif:
+     ```tsx
+     <button
+       className="btn-mic disabled:opacity-50 disabled:cursor-not-allowed"
+       onClick={toggleMicrophone}
+       disabled={callStatus !== CallStatus.ACTIVE}
+     >
+     ```
+
+---
+
 ## Getting Started

@@ -1,6 +1,5 @@
 "use client";
 
-import { Input } from "@base-ui/react/input";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -43,12 +42,12 @@ const SearchInput = () => {
   }, [pathname, router, searchParams, searchQuery, query]);
 
   return (
-    <div className="relative border border-black rounded-lg items-center flex gap-2 px-2 py-1 h-fit">
+    <div className="relative border border-black rounded-lg items-center flex gap-2 px-3 h-10 w-[240px] md:w-[280px]">
       <Image src="/icons/search.svg" alt="search" width={15} height={15} />
 
-      <Input
-        placeholder="search companions..."
-        className="outline-none"
+      <input
+        placeholder="Search companions..."
+        className="outline-none text-sm w-full bg-transparent placeholder:text-muted-foreground"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />

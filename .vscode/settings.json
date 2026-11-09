@@ -1,0 +1,16 @@
+{
+  "prettier.semi": false,
+  "javascript.format.semicolons": "remove",
+  "typescript.format.semicolons": "remove",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.autoImports": true,
+  "editor.suggestSelection": "first",
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.tabCompletion": "on"
+}
+
