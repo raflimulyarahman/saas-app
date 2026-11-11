@@ -38,10 +38,6 @@
 
 **Converso** adalah aplikasi web SaaS modern yang memungkinkan pengguna membuat tutor AI kustom sesuai mata pelajaran (*Maths, Science, Coding, Language, History, Economics*), mengatur gaya bicara (*Formal / Casual*), serta berdiskusi langsung menggunakan suara secara *real-time* melalui integrasi **Vapi AI**, **Deepgram**, **ElevenLabs**, dan **OpenAI**.
 
-<div align="center">
-  <img src="public/readme/thumbnail.png" alt="Converso Preview" width="85%" />
-</div>
-
 ---
 
 ## 🛠 Tech Stack
